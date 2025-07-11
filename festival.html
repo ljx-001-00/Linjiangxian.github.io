@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统节日 - 中华文化瑰宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f4e9;
+            padding-top: 80px; /* 为固定导航栏留出空间 */
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .main-nav.scrolled {
+            background: #bc002d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 5%;
+        }
+        
+        .logo img {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-links a {
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #f8ecc2;
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #f8ecc2;
+        }
+        
+        .language-switch {
+            border: 1px solid white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        
+        /* 节日页面标题区 */
+        .festival-header {
+            height: 60vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), 
+                        url('./img/背景2.jpeg') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            margin-top: -80px;/* 抵消导航栏padding */ 
+        }
+        
+        .festival-header h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        .festival-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* 时间轴样式 */
+        .timeline-section {
+            padding: 60px 10%;
+            background: #f8f4e9;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: #bc002d;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #006f47;
+        }
+        
+        .timeline-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background: #bc002d;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 3px;
+        }
+        
+        .festival-card {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+        
+        .festival-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .festival-card::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #f8ecc2;
+            border: 4px solid #bc002d;
+            border-radius: 50%;
+            top: 30px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::after {
+            right: -12px;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .festival-content {
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .festival-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .festival-content h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #bc002d;
+        }
+        
+        .festival-date {
+            font-style: italic;
+            color: #006f47;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .festival-date i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .festival-desc {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        /* 单张图3D旋转样式 */
+        .festival-media {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .media-caption {
+            flex: 1;
+            min-width: 150px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            padding: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 5px;
+        }
+        
+        .artifact-3d-container {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            height: 200px;
+            perspective: 1000px;
+        }
+        
+        .artifact-single {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            cursor: grab;
+            border-radius: 5px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .artifact-single:active {
+            cursor: grabbing;
+        }
+        
+        .artifact-info-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            background: rgba(188, 0, 45, 0.7);
+            color: white;
+            padding: 5px;
+            font-size: 0.8rem;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        /* 节日美食文化部分 */
+        .food-culture-section {
+            padding: 60px 10%;
+            background: linear-gradient(to bottom, #f0e6d2, #e8dcc0);
+        }
+        
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .food-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .food-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .food-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .food-label {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .food-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .food-info h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #bc002d;
+        }
+        
+        .food-desc {
+            margin-bottom: 20px;
+            line-height: 1.7;
+            flex: 1;
+        }
+        
+        .food-symbol {
+            display: flex;
+            align-items: center;
+            color: #006f47;
+            font-weight: bold;
+        }
+        
+        .food-symbol i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* 页脚 */
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 40px 10%;
+            text-align: center;
+        }
+        
+        .social-icons {
+            margin-bottom: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 10px;
+            text-align: center;
+            line-height: 40px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background: #bc002d;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .festival-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .timeline-container::after {
+                left: 31px;
+            }
+            
+            .festival-card {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .festival-card::after {
+                left: 18px;
+            }
+            
+            .left::after, .right::after {
+                left: 18px;
+            }
+            
+            .left, .right {
+                left: 0;
+            }
+            
+            .festival-media {
+                flex-direction: column;
+            }
+            
+            .media-caption {
+                width: 100%;
+            }
+        }
+        /* 模态框 */
+                .food-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        
+        .modal-content {
+            background-color: #f8f4e9;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            color: #bc002d;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            transform: rotate(90deg);
+            color: #8c001a;
+        }
+        
+        .modal-header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: #bc002d;
+        }
+        
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .modal-image {
+            flex: 1;
+            min-width: 300px;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .modal-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .modal-text p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .modal-ingredients {
+            background: rgba(188, 0, 45, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .modal-ingredients h4 {
+            color: #bc002d;
+            margin-bottom: 10px;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        .modal-ingredients ul {
+            padding-left: 20px;
+            columns: 2;
+        }
+        
+        .modal-ingredients li {
+            margin-bottom: 5px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .modal-body {
+                flex-direction: column;
+            }
+            
+            .modal-image {
+                min-width: 100%;
+                height: 200px;
+            }
+            
+            .modal-ingredients ul {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="main-nav" id="mainNav">
+        <div class="logo">
+            <img src="./img/logo3.png" alt="中华文化">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="history.html">历史长河</a></li>
+            <li><a href="art.html">艺术瑰宝</a></li>
+            <li><a href="festival.html" class="active">传统节日</a></li>
+            <li><a href="quiz.html">文化测验</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+        </ul>
+        <div class="language-switch">中/EN</div>
+    </nav>
+
+    <!-- 页面标题区 -->
+    <header class="festival-header">
+        <h1>岁时节令</h1>
+        <p>从春节到中秋，从端午到重阳，体验中华民族传承千年的节日文化</p>
+    </header>
+
+    <!-- 节日时间轴部分 -->
+    <section class="timeline-section">
+        <div class="section-title">
+            <h2>传统节日时间轴</h2>
+        </div>
+        
+        <div class="timeline-container">
+            <!-- 春节 -->
+            <div class="festival-card left">
+                <div class="festival-content">
+                    <h3>春节</h3>
+                    <div class="festival-date">
+                        <i class="fas fa-calendar-day"></i>农历正月初一
+                    </div>
+                    <div class="festival-desc">
+                        春节是中华民族最隆重的传统佳节，已有4000多年历史。节日活动从腊月二十三小年开始，持续到正月十五元宵节。主要习俗包括贴春联、放鞭炮、吃年夜饭、拜年、发压岁钱等，象征辞旧迎新、祈福纳祥。
+                    </div>
+                    <div class="festival-media">
+                        <div class="media-caption">
+                            <i class="fas fa-info-circle"></i> 拖动图片可360°旋转查看"岁朝清供图"
+                        </div>
+                        <div class="artifact-3d-container">
+                            <div class="artifact-single" id="spring-festival-artifact"
+                                 style="background-image: url('./img/岁朝清供图.jpg')">
+                                <div class="artifact-info-tag">清·岁朝清供图</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 元宵节 -->
+            <div class="festival-card right">
+                <div class="festival-content">
+                    <h3>元宵节</h3>
+                    <div class="festival-date">
+                        <i class="fas fa-calendar-day"></i>农历正月十五
+                    </div>
+                    <div class="festival-desc">
+                        元宵节又称上元节，是春节之后的第一个重要节日。主要习俗有赏花灯、吃元宵、猜灯谜、舞龙舞狮等。元宵节起源于汉代，已有2000多年历史，灯会活动从唐代开始盛行，宋代发展出复杂的灯彩工艺。
+                    </div>
+                    <div class="festival-media">
+                        <div class="media-caption">
+                            <i class="fas fa-info-circle"></i> 拖动图片可360°旋转查看宋代灯彩
+                        </div>
+                        <div class="artifact-3d-container">
+                            <div class="artifact-single" id="lantern-festival-artifact"
+                                 style="background-image: url('./img/文物展示/元宵灯彩.jpeg')">
+                                <div class="artifact-info-tag">宋·元宵灯彩</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 端午节 -->
+            <div class="festival-card left">
+                <div class="festival-content">
+                    <h3>端午节</h3>
+                    <div class="festival-date">
+                        <i class="fas fa-calendar-day"></i>农历五月初五
+                    </div>
+                    <div class="festival-desc">
+                        端午节又称端阳节、龙舟节，最初是古代先民祛病防疫的节日，后因纪念屈原而广为人知。主要习俗包括吃粽子、赛龙舟、挂艾草菖蒲、佩香囊、系五彩绳等。2009年，端午节被列入世界非物质文化遗产，成为中国首个入选世界非遗的节日。
+                    </div>
+                    <div class="festival-media">
+                        <div class="media-caption">
+                            <i class="fas fa-info-circle"></i> 拖动图片可360°旋转查看青铜龙舟
+                        </div>
+                        <div class="artifact-3d-container">
+                            <div class="artifact-single" id="dragon-boat-artifact"
+                                 style="background-image: url('./img/文物展示/青铜龙舟.jpg')">
+                                <div class="artifact-info-tag">战国·青铜龙舟</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中秋节 -->
+            <div class="festival-card right">
+                <div class="festival-content">
+                    <h3>中秋节</h3>
+                    <div class="festival-date">
+                        <i class="fas fa-calendar-day"></i>农历八月十五
+                    </div>
+                    <div class="festival-desc">
+                        中秋节源自天象崇拜，由上古时代秋夕祭月演变而来，盛行于唐宋，定型于宋代。主要习俗包括赏月、吃月饼、提灯笼、玩花灯、赏桂花等。中秋节以月之圆兆人之团圆，寄托思念故乡、思念亲人之情，祈盼丰收、幸福，成为丰富多彩、弥足珍贵的文化遗产。
+                    </div>
+                    <div class="festival-media">
+                        <div class="media-caption">
+                            <i class="fas fa-info-circle"></i> 拖动图片可360°旋转查看月宫镜
+                        </div>
+                        <div class="artifact-3d-container">
+                            <div class="artifact-single" id="mid-autumn-artifact"
+                                 style="background-image: url('./img/文物展示/月宫镜.jpeg')">
+                                <div class="artifact-info-tag">唐·月宫镜</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 节日美食文化部分 -->
+    <section class="food-culture-section">
+        <div class="section-title">
+            <h2>节日美食文化</h2>
+        </div>
+        
+        <div class="food-grid">
+            <!-- 春节美食 -->
+            <div class="food-card" onclick="openFoodModal('spring-food')">
+                <div class="food-image" style="background-image: url('./img/饺子.jpg')">
+                    <div class="food-label">春节</div>
+                </div>
+                <div class="food-info">
+                    <h3>饺子与年糕</h3>
+                    <div class="food-desc">
+                        <p>北方春节必吃饺子，形似元宝寓意招财进宝；南方则以年糕为主，象征"年年高升"。</p>
+                    </div>
+                    <div class="food-symbol">
+                        <i class="fas fa-utensils"></i>
+                        <span>团圆美满</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 元宵节美食 -->
+            <div class="food-card" onclick="openFoodModal('lantern-food')">
+                <div class="food-image" style="background-image: url('./img/元宵与汤圆.jpeg')">
+                    <div class="food-label">元宵节</div>
+                </div>
+                <div class="food-info">
+                    <h3>元宵与汤圆</h3>
+                    <div class="food-desc">
+                        <p>北方滚元宵，南方包汤圆，虽然做法不同，但都象征团圆美满。</p>
+                    </div>
+                    <div class="food-symbol">
+                        <i class="fas fa-moon"></i>
+                        <span>团团圆圆</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 端午节美食 -->
+            <div class="food-card" onclick="openFoodModal('dragon-food')">
+                <div class="food-image" style="background-image: url('./img/粽子.jpg')">
+                    <div class="food-label">端午节</div>
+                </div>
+                <div class="food-info">
+                    <h3>粽子</h3>
+                    <div class="food-desc">
+                        <p>为纪念屈原而流传的节令食品，南北风味各异，粽叶清香与糯米完美结合。</p>
+                    </div>
+                    <div class="food-symbol">
+                        <i class="fas fa-leaf"></i>
+                        <span>缅怀先贤</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中秋节美食 -->
+            <div class="food-card" onclick="openFoodModal('moon-food')">
+                <div class="food-image" style="background-image: url('./img/月饼.jpg')">
+                    <div class="food-label">中秋节</div>
+                </div>
+                <div class="food-info">
+                    <h3>月饼</h3>
+                    <div class="food-desc">
+                        <p>圆形月饼象征团圆，传统广式、苏式、京式各具特色。</p>
+                    </div>
+                    <div class="food-symbol">
+                        <i class="fas fa-moon"></i>
+                        <span>花好月圆</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 春节美食模态框 -->
+    <div id="spring-food" class="food-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFoodModal('spring-food')">&times;</span>
+            <div class="modal-header">
+                <h3>春节美食 - 饺子与年糕</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image" style="background-image: url('./img/饺子.jpg')"></div>
+                <div class="modal-text">
+                    <p>饺子是中国北方春节最重要的传统食品，形状像元宝，寓意"招财进宝"。包饺子时，家人围坐一起，和面、擀皮、包馅，象征着团圆和睦。</p>
+                    <p>南方则以年糕为主，谐音"年高"，寓意年年高升。年糕可甜可咸，有蒸、炒、炸等多种做法，口感软糯香甜。</p>
+                    <div class="modal-ingredients">
+                        <h4>传统饺子馅料</h4>
+                        <ul>
+                            <li>猪肉白菜馅</li>
+                            <li>韭菜鸡蛋馅</li>
+                            <li>三鲜馅(虾仁、猪肉、韭菜)</li>
+                            <li>羊肉胡萝卜馅</li>
+                            <li>素馅(香菇、豆腐、粉丝)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 元宵节美食模态框 -->
+    <div id="lantern-food" class="food-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFoodModal('lantern-food')">&times;</span>
+            <div class="modal-header">
+                <h3>元宵节美食 - 元宵与汤圆</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image" style="background-image: url('./img/元宵与汤圆.jpeg')"></div>
+                <div class="modal-text">
+                    <p>元宵和汤圆都是元宵节的传统食品，虽然外形相似，但制作方法不同。北方"滚"元宵，南方"包"汤圆，都象征着团圆美满。</p>
+                    <p>传统馅料以甜味为主，如芝麻、花生、豆沙等。现代创新口味包括水果、巧克力、奶黄等，满足不同人群的口味需求。</p>
+                    <div class="modal-ingredients">
+                        <h4>传统元宵/汤圆馅料</h4>
+                        <ul>
+                            <li>黑芝麻馅</li>
+                            <li>花生馅</li>
+                            <li>红豆沙馅</li>
+                            <极
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 端午节美食模态框 -->
+    <div id="dragon-food" class="food-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFoodModal('dragon-food')">&times;</span>
+            <div class="modal-header">
+                <h3>端午节美食 - 粽子</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image" style="background-image: url('./img/粽子.jpg')"></div>
+                <div class="modal-text">
+                    <p>粽子是端午节最具代表性的食品，为纪念屈原而流传至今。南北粽子风味各异，北方多为甜粽，南方则以咸粽为主。</p>
+                    <p>传统粽子用箬叶或芦苇叶包裹糯米和各种馅料，经过长时间蒸煮，粽叶的清香渗入糯米中，形成独特的风味。</p>
+                    <div class="modal-ingredients">
+                        <h4>各地粽子特色</h4>
+                        <ul>
+                            <li>北京：小枣粽</li>
+                            <li>浙江：嘉兴肉粽</li>
+                            <li>广东：咸蛋黄肉粽</li>
+                            <li>四川：辣粽</li>
+                            <li>台湾：八宝粽</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 中秋节美食模态框 -->
+    <div id="moon-food" class="food-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFoodModal('moon-food')">&times;</span>
+            <div class="modal-header">
+                <h3>中秋节美食 - 月饼</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image" style="background-image: url('./img/月饼.jpg')"></div>
+                <div class="modal-text">
+                    <p>月饼是中秋节的传统食品，圆形造型象征团圆美满。传统月饼种类繁多，各具特色，反映了中国各地的饮食文化。</p>
+                    <p>现代月饼在传承传统工艺的基础上不断创新，出现了冰皮月饼、冰淇淋月饼等新品种，但传统口味依然深受喜爱。</p>
+                    <div class="modal-ingredients">
+                        <h4>传统月饼种类</h4>
+                        <ul>
+                            <li>广式月饼：皮薄馅多</li>
+                            <li>苏式月饼：酥皮分层</li>
+                            <li>京式月饼：口感松软</li>
+                            <li>潮式月饼：酥脆香甜</li>
+                            <li>滇式月饼：云腿月饼</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 原有JavaScript保持不变...
+        
+        // 新增模态框控制函数
+        function openFoodModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeFoodModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target.className === 'food-modal') {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // ESC键关闭模态框
+        document.onkeydown = function(evt) {
+            evt = evt || window.event;
+            if (evt.keyCode == 27) {
+                const modals = document.getElementsByClassName('food-modal');
+                for (let i = 0; i < modals.length; i++) {
+                    if (modals[i].style.display === 'block') {
+                        modals[i].style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- 页脚 -->
+    <footer class="main-footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-weixin"></i></a>
+            <a href="#"><i class="fab fa-weibo"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p class="copyright">© 2025 中华文化瑰宝 | 所有权利保留</p>
+    </footer>
+
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 时间轴动画效果
+        const festivalCards = document.querySelectorAll('.festival-card');
+        
+        function checkTimeline() {
+            const triggerBottom = window.innerHeight * 0.8;
+            
+            festivalCards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                
+                if (cardTop < triggerBottom) {
+                    card.classList.add('visible');
+                }
+            });
+        }
+        
+        // 单张图3D旋转控制
+        function setupSingleArtifact(artifactId) {
+            const artifact = document.getElementById(artifactId);
+            let isDragging = false;
+            let startX, startY;
+            let rotateX = 0, rotateY = 0;
+            let currentX = 0, currentY = 0;
+            
+            // 鼠标事件
+            artifact.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                artifact.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                rotateY = currentX + deltaX * 0.5;
+                rotateX = currentY - deltaY * 0.5;
+                
+                artifact.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    currentX = rotateY;
+                    currentY = rotateX;
+                }
+                isDragging = false;
+                artifact.style.cursor = 'grab';
+            });
+            
+            // 触摸事件
+            artifact.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.touches[0].clientX - startX;
+                const deltaY = e.touches[0].clientY - startY;
+                
+                rotateY = currentX + deltaX * 0.5;
+                rotateX = currentY - deltaY * 0.5;
+                
+                artifact.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            document.addEventListener('touchend', () => {
+                if (isDragging) {
+                    currentX = rotateY;
+                    currentY = rotateX;
+                }
+                isDragging = false;
+            });
+        }
+
+        // 初始化所有功能
+        window.addEventListener('load', () => {
+            checkTimeline();
+            setupSingleArtifact('spring-festival-artifact');
+            setupSingleArtifact('lantern-festival-artifact');
+            setupSingleArtifact('dragon-boat-artifact');
+            setupSingleArtifact('mid-autumn-artifact');
+        });
+        
+        window.addEventListener('scroll', checkTimeline);
+    </script>
+</body>
+</html>

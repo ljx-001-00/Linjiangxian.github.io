@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艺术品详情 - 中华文化瑰宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;7&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f4e9;
+            padding-top: 80px;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .main-nav.scrolled {
+            background: #bc002d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 5%;
+        }
+        
+        .logo img {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-links a {
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #f8ecc2;
+        }
+        
+        .nav-links a.active {
+            position: relative;
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #f8ecc2;
+        }
+        
+        .language-switch {
+            border: 1px solid white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        
+        /* 详情页容器 */
+        .detail-container {
+            display: none;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .detail-container.active {
+            display: block;
+        }
+        
+        /* 详情页样式 */
+        .art-detail-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .art-detail-header h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3rem;
+            color: #bc002d;
+            margin-bottom: 15px;
+        }
+        
+        .art-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .art-meta span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .art-meta i {
+            margin-right: 8px;
+            color: #006f47;
+        }
+        
+        .art-detail-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .art-image-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .art-image {
+            width: 100%;
+            height: 500px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .art-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .art-description {
+            margin-bottom: 30px;
+        }
+        
+        .art-description p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .art-details {
+            background: rgba(188, 0, 45, 0.05);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #bc002d;
+        }
+        
+        .art-details h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            color: #bc002d;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #bc002d;
+            color: white;
+            border-radius: 30px;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+        
+        .back-button:hover {
+            background: #8c001a;
+            transform: translateY(-2px);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .art-detail-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .art-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .art-image {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="main-nav" id="mainNav">
+        <div class="logo">
+            <img src="./img/logo3.png" alt="中华文化">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="history.html">历史长河</a></li>
+            <li><a href="art.html" class="active">艺术瑰宝</a></li>
+            <li><a href="festival.html">传统节日</a></li>
+            <li><a href="quiz.html">文化测验</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+        </ul>
+        <div class="language-switch">中/EN</div>
+    </nav>
+
+    <!-- 第一部分：6个艺术品详情页 -->
+    <div id="qingming" class="detail-container">
+        <div class="art-detail-header">
+            <h1>清明上河图</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 北宋·张择端</span>
+                <span><i class="fas fa-tag"></i> 绘画</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/清明上河图.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《清明上河图》是北宋画家张择端创作的风俗画作品，现藏于北京故宫博物院。作品以长卷形式，采用散点透视构图法，生动记录了中国十二世纪北宋都城汴京的城市面貌和当时社会各阶层人民的生活状况。</p>
+                    <p>这幅画作宽24.8厘米，长528.7厘米，绢本设色。作品以精致的工笔描绘了清明时节汴京及汴河两岸的自然风光和繁荣景象。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>全图大致分为汴京郊外春光、汴河场景、城内街市三部分。画面中有814人，牲畜60多匹，船只28艘，房屋楼宇30多栋，车20辆，轿8顶，树木170多棵，往来衣着不同，神情各异，栩栩如生。</p>
+                    <p>作品采用散点透视法，构图疏密有致，注重节奏感和韵律变化。笔墨章法巧妙，人物刻画生动传神，牲畜形态各异，房舍、桥梁等建筑结构严谨，车马船只面面俱到，充分表现了画家高度的绘画技巧和观察力。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="fu-chun" class="detail-container">
+        <div class="art-detail-header">
+            <h1>富春山居图</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 元代·黄公望</span>
+                <span><i class="fas fa-tag"></i> 绘画</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/富春山居图.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《富春山居图》是元代画家黄公望创作的纸本水墨画，中国十大传世名画之一。作品描绘了富春江两岸的初秋景色，是黄公望为师弟郑樗（无用师）所绘，耗时数年完成。</p>
+                    <p>此画以长卷形式呈现，纵33厘米，横636.9厘米，现分藏于浙江省博物馆（《剩山图》）和台北故宫博物院（《无用师卷》）。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>画面布局疏密有致，山石树木错落有序，运用"披麻皴"等技法表现江南山水的秀润。全卷墨色淡雅，笔法变化丰富，既有雄浑的气势，又不失细腻的笔触。</p>
+                    <p>作品体现了元代文人画的典型特征，将诗、书、画融为一体，表达了画家对自然山水的深刻理解和超脱情怀。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="han-xi" class="detail-container">
+        <div class="art-detail-header">
+            <h1>韩熙载夜宴图</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 五代·顾闳中</span>
+                <span><i class="fas fa-tag"></i> 绘画</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/韩熙载夜宴图.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《韩熙载夜宴图》是五代南唐画家顾闳中的工笔重彩人物画作品，现藏于北京故宫博物院。作品描绘了南唐大臣韩熙载在家中设夜宴载歌行乐的场面。</p>
+                    <p>此画纵28.7厘米，横335.5厘米，绢本设色。据传是南唐后主李煜为考察韩熙载的生活而派顾闳中潜入其府邸观察后所作。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>全画分为听乐、观舞、休息、清吹、散宴五个场景，以屏风为自然间隔。人物形象生动传神，特别是韩熙载的表情刻画细致入微，既显豪放又不失忧郁。</p>
+                    <p>作品构图严谨，色彩富丽典雅，线条流畅有力，是中国古代人物画的杰出代表，也是研究五代时期服饰、家具、乐舞等的重要资料。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="luo-shen" class="detail-container">
+        <div class="art-detail-header">
+            <h1>洛神赋图</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 东晋·顾恺之</span>
+                <span><i class="fas fa-tag"></i> 绘画</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/洛神赋图.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《洛神赋图》是东晋画家顾恺之根据曹植的《洛神赋》创作的绢本绘画作品，现存多为宋摹本，藏于北京故宫博物院等地。作品描绘了曹植与洛神相遇、相恋到最终分离的浪漫故事。</p>
+                    <p>此画采用连环画式的构图方式，将不同时空的场景巧妙地组合在同一画面中，是中国早期人物画的杰出代表。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>画面以山水为背景，人物形象优美飘逸，特别是洛神的形象塑造极具仙气。顾恺之运用"高古游丝描"技法，线条流畅如春蚕吐丝，富有韵律感。</p>
+                    <p>作品体现了"以形写神"的艺术理念，注重人物神态和内心情感的刻画，开创了中国绘画"诗画结合"的传统，对后世影响深远。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="lan-ting" class="detail-container">
+        <div class="art-detail-header">
+            <h1>兰亭序</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 东晋·王羲之</span>
+                <span><i class="fas fa-tag"></i> 书法</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/兰亭序.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《兰亭序》是东晋书法家王羲之的代表作，被誉为"天下第一行书"。此帖是王羲之与友人在会稽山阴的兰亭雅集时所作，记述了当时的情景和作者的感慨。</p>
+                    <p>原作已佚，现存多为唐代摹本，其中以冯承素摹本（神龙本）最为著名，现藏于北京故宫博物院。全文28行，324字，通篇遒媚飘逸，字字精妙。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>作品笔法变化丰富，点画犹如舞蹈，有如神助。其中20个"之"字，7个"不"字，各具特色而不雷同，体现了王羲之高超的书法造诣。</p>
+                    <p>《兰亭序》将行书的艺术性推向巅峰，笔势流畅自然，结体优美多变，章法疏密有致，被誉为"清风出袖，明月入怀"，对后世书法影响深远。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="jiu-cheng" class="detail-container">
+        <div class="art-detail-header">
+            <h1>九成宫醴泉铭</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 唐代·欧阳询</span>
+                <span><i class="fas fa-tag"></i> 书法</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/九成宫醴泉铭.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《九成宫醴泉铭》是唐代书法家欧阳询晚年楷书代表作，刻于唐贞观六年（632年），由魏徵撰文，记载唐太宗在九成宫发现醴泉之事。碑石现存陕西麟游县。</p>
+                    <p>此碑高247厘米，宽120厘米，楷书24行，每行49字，被誉为"天下第一楷书"，是学习楷书的经典范本。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>作品笔力险劲，法度森严，点画工妙，意态精密。结字方正匀称，中宫收紧，主笔突出，体现了欧体楷书"险劲"的特点。</p>
+                    <p>《九成宫醴泉铭》代表了唐代楷书的最高成就，既有北碑的雄强，又具南帖的秀润，对后世影响极大，至今仍是书法爱好者临习的重要范本。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="duo-bao" class="detail-container">
+        <div class="art-detail-header">
+            <h1>多宝塔碑</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 唐代·颜真卿</span>
+                <span><i class="fas fa-tag"></i> 书法</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/多宝塔碑.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《多宝塔碑》是唐代书法家颜真卿44岁时所书，刻于唐天宝十一年（752年），由岑勋撰文，记载楚金禅师建多宝塔之事。碑石现存西安碑林。</p>
+                    <p>此碑高285厘米，宽102厘米，楷书34行，每行66字，是颜真卿早期楷书代表作，体现了颜体楷书从初具规模到成熟的过程。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>作品结构严谨，笔法精妙，点画圆整，横轻竖重，转折处多用转笔，体现了颜体楷书端庄雄伟、气势开张的特点。</p>
+                    <p>《多宝塔碑》虽为颜真卿早期作品，但已显露出其独特的艺术风格，对后世影响深远，是学习楷书的重要范本之一。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="yan-qin" class="detail-container">
+        <div class="art-detail-header">
+            <h1>颜勤礼碑</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 唐代·颜真卿</span>
+                <span><i class="fas fa-tag"></i> 书法</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/颜勤礼碑.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>《颜勤礼碑》是唐代书法家颜真卿71岁时为其曾祖父颜勤礼所立的神道碑，刻于唐大历十四年（779年），由颜真卿亲自撰文并书丹。碑石现存西安碑林。</p>
+                    <p>此碑高268厘米，宽92厘米，楷书44行，每行38字，是颜真卿晚年楷书代表作，体现了颜体楷书成熟时期的艺术风格。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>作品笔力雄浑，气势磅礴，结体宽博，横细竖粗，转折处多用顿笔，体现了颜体楷书"雄强"的特点。</p>
+                    <p>《颜勤礼碑》代表了颜真卿楷书的最高成就，字形端庄雄伟，气势开张，骨力遒劲，是学习颜体楷书的重要范本。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="tang-sancai" class="detail-container">
+        <div class="art-detail-header">
+            <h1>唐三彩</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 唐代</span>
+                <span><i class="fas fa-tag"></i> 陶瓷</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/唐三彩1.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>唐三彩是唐代低温彩釉陶器的总称，以黄、绿、白三色为主，故称"唐三彩"。主要用于随葬，反映了唐代厚葬之风和工艺美术的高度成就。</p>
+                    <p>唐三彩的制作工艺复杂，需两次烧成。先在1100℃左右的高温下烧成素坯，然后施釉，再经900℃低温烧制而成。釉色以黄、绿、白为主，兼有蓝、褐等色。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>唐三彩造型生动，色彩斑斓绚丽，常见有人物、动物、器皿等造型，其中以马和骆驼最为著名。</p>
+                    <p>唐三彩反映了唐代中外文化交流的盛况，许多造型具有明显的西域风格，是研究唐代社会生活、服饰、乐舞等的重要实物资料。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="blue-white" class="detail-container">
+        <div class="art-detail-header">
+            <h1>元青花</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 元代</span>
+                <span><i class="fas fa-tag"></i> 陶瓷</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/元青花.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>元青花是元代创烧的青花瓷器，以钴料在瓷胎上绘画，施透明釉后高温烧成，是中国陶瓷艺术的瑰宝。最著名的元青花是"鬼谷子下山"图罐，2005年拍出2.3亿人民币的天价。</p>
+                    <p>元青花采用进口的"苏麻离青"钴料，发色浓艳青翠，有铁锈斑痕，釉面莹润，胎体厚重，造型大气。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>元青花纹饰繁密，层次丰富，常见有缠枝牡丹、鱼藻纹、人物故事等题材，绘画风格豪放洒脱。</p>
+                    <p>元青花融合了中国传统绘画艺术与伊斯兰装饰风格，是中外文化交流的产物，代表了中国青花瓷器的第一个高峰。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="ru-ware" class="detail-container">
+        <div class="art-detail-header">
+            <h1>汝窑瓷器</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 宋代</span>
+                <span><i class="fas fa-tag"></i> 陶瓷</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/汝窑瓷器.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>汝窑是宋代五大名窑之首，以天青釉色著称，釉面温润如玉，有"雨过天青云破处"之美誉。汝窑瓷器存世稀少，全世界不足百件，极为珍贵。</p>
+                    <p>汝窑瓷器胎质细腻，釉色以天青为主，釉层均匀，开片细密，造型简洁大方，体现了宋代瓷器"含蓄内敛"的美学追求。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>汝窑瓷器釉色独特，天青色中微带蓝调，釉面有细小的开片，光泽柔和内敛，如冰似玉。</p>
+                    <p>汝窑瓷器制作工艺精湛，采用满釉支烧法，底部留有细小支钉痕，器型端庄典雅，代表了宋代瓷器艺术的最高成就。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="dou-cai" class="detail-container">
+        <div class="art-detail-header">
+            <h1>斗彩瓷器</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 明代</span>
+                <span><i class="fas fa-tag"></i> 陶瓷</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/斗彩瓷器.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>斗彩是明代创烧的彩瓷品种，釉下青花与釉上彩相结合，色彩绚丽，工艺精湛。最著名的斗彩瓷器是明成化斗彩鸡缸杯，2014年拍出2.8亿港元的天价。</p>
+                    <p>斗彩瓷器制作工艺复杂，需先高温烧制青花部分，再在釉上施彩低温二次烧成，技术要求极高。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>斗彩瓷器色彩丰富艳丽，青花勾勒轮廓，釉上彩填色，纹饰精细，层次分明。</p>
+                    <p>斗彩瓷器造型精巧，纹饰题材丰富，常见有缠枝花卉、婴戏图、花鸟虫鱼等，代表了明代彩瓷工艺的最高水平。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="terracotta" class="detail-container">
+        <div class="art-detail-header">
+            <h1>兵马俑</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 秦代</span>
+                <span><i class="fas fa-tag"></i> 雕塑</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/兵马俑.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>兵马俑是秦始皇陵的陪葬俑群，位于陕西省西安市临潼区秦始皇陵以东1.5公里处。1974年被发现，被誉为"世界第八大奇迹"。</p>
+                    <p>兵马俑坑现已发现三座，呈品字形排列，总面积达2万多平方米，内有陶俑、陶马8000余件，战车百余乘，兵器数十万件。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>兵马俑规模宏大，气势磅礴，陶俑平均身高1.8米，形态各异，面部表情丰富，展现了秦代雕塑艺术的高度写实风格。</p>
+                    <p>兵马俑制作工艺精湛，采用模塑结合的方法，先分件制作，再粘接成型，最后施彩绘，体现了秦代高超的制陶技术。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="longmen" class="detail-container">
+        <div class="art-detail-header">
+            <h1>龙门石窟</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 北魏至唐代</span>
+                <span><i class="fas fa-tag"></i> 雕塑</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/龙门石窟.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>龙门石窟是中国三大石窟之一，位于河南省洛阳市南郊伊河两岸的龙门山与香山上。开凿于北魏孝文帝年间，历经东魏、西魏、北齐、隋、唐、五代、宋等朝代，历时400余年。</p>
+                    <p>现存窟龛2345个，造像10万余尊，碑刻题记2800余品，佛塔70余座，是中国石刻艺术的宝库。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>龙门石窟造像风格多样，北魏时期造像清秀俊逸，唐代造像丰满圆润，体现了佛教艺术中国化的过程。</p>
+                    <p>卢舍那大佛高17.14米，面容丰满圆润，目光慈祥，衣纹流畅，代表了唐代佛教造像艺术的最高成就。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="yungang" class="detail-container">
+        <div class="art-detail-header">
+            <h1>云冈石窟</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 北魏</span>
+                <span><i class="fas fa-tag"></i> 雕塑</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/云冈石窟.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>云冈石窟是中国三大石窟之一，位于山西省大同市西郊武周山南麓。始凿于北魏和平元年（460年），主要洞窟完成于北魏迁都洛阳之前（494年）。</p>
+                    <p>现存主要洞窟45个，大小窟龛252个，石雕造像51000余尊，代表了5世纪佛教艺术的最高成就。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>云冈石窟早期造像受印度犍陀罗艺术影响，佛像高鼻深目，衣纹厚重；后期造像逐渐汉化，面容清秀，服饰飘逸。</p>
+                    <p>第20窟露天大佛高13.7米，面容庄严，身躯挺拔，是云冈石窟的代表作，展现了北魏皇家石窟的宏伟气势。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="maitreya" class="detail-container">
+        <div class="art-detail-header">
+            <h1>乐山大佛</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 唐代</span>
+                <span><i class="fas fa-tag"></i> 雕塑</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/乐山大佛.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>乐山大佛是世界最大的石刻弥勒佛坐像，位于四川省乐山市岷江、青衣江、大渡河三江汇流处。开凿于唐玄宗开元初年（713年），历时90年完成。</p>
+                    <p>大佛通高71米，头高14.7米，头宽10米，肩宽24米，耳长7米，脚背宽8.5米，可围坐百人以上，气势恢宏。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>乐山大佛依山而凿，比例匀称，面容慈祥，双手抚膝，足踏莲花，衣纹流畅自然，展现了唐代石刻艺术的高超水平。</p>
+                    <p>大佛设计巧妙，内部有排水系统，可有效防止雨水侵蚀，体现了古代工匠的智慧。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="si-mu-wu" class="detail-container">
+        <div class="art-detail-header">
+            <h1>司母戊鼎</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 商代</span>
+                <span><i class="fas fa-tag"></i> 青铜器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/司母戊鼎1.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>司母戊鼎是中国商代晚期最重的青铜器，1939年出土于河南省安阳市武官村。鼎高133厘米，口长110厘米，口宽79厘米，重832.84公斤。</p>
+                    <p>鼎身呈长方形，立耳，柱足，腹部饰饕餮纹，足部饰兽面纹。内壁铸有"司母戊"三字铭文，据考证是商王为祭祀其母戊而铸。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>司母戊鼎造型雄伟，纹饰精美，采用陶范法铸造，需用1000公斤以上的原料，由上百名工匠协作完成，体现了商代高度发达的青铜冶铸技术。</p>
+                    <p>鼎身纹饰繁复精美，饕餮纹威严神秘，兽面纹生动有力，展现了商代青铜器艺术的独特风格。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="mao-gong" class="detail-container">
+        <div class="art-detail-header">
+            <h1>毛公鼎</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 西周</span>
+                <span><i class="fas fa-tag"></i> 青铜器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/毛公鼎.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>毛公鼎是西周晚期青铜器，清道光年间出土于陕西省岐山县。鼎高53.8厘米，口径47.9厘米，重34.7公斤。</p>
+                    <p>鼎内壁铸有499字铭文，是现存铭文最长的青铜器，记载了周宣王告诫和赏赐大臣毛公的事迹，具有重要历史价值。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>毛公鼎造型端庄稳重，纹饰简洁大方，双耳外撇，三足粗壮，体现了西周晚期青铜器的典型风格。</p>
+                    <p>铭文字体优美，笔道圆润，排列整齐，是研究西周金文书法的重要资料，被誉为"青铜器铭文之冠"。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="zun-pan" class="detail-container">
+        <div class="art-detail-header">
+            <h1>曾侯乙尊盘</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 战国</span>
+                <span><i class="fas fa-tag"></i> 青铜器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/曾侯乙尊盘.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>曾侯乙尊盘是战国早期青铜器，1978年出土于湖北省随州市擂鼓墩曾侯乙墓。尊高33.1厘米，盘高24厘米，整套器物重约30公斤。</p>
+                    <p>尊盘由尊和盘两部分组成，尊置于盘中，造型复杂精巧，纹饰繁缛华丽，代表了先秦青铜铸造技术的最高水平。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>尊盘采用失蜡法铸造，器身布满镂空纹饰，由多层透雕的蟠螭纹构成，纹饰之间相互独立又彼此勾连，工艺精湛复杂。</p>
+                    <p>尊盘造型奇特，纹饰繁而不乱，层次分明，展现了战国时期青铜器工艺的精湛技艺和艺术创造力。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="four-goat" class="detail-container">
+        <div class="art-detail-header">
+            <h1>四羊方尊</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 商代</span>
+                <span><i class="fas fa-tag"></i> 青铜器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/四羊方尊.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>四羊方尊是商代晚期青铜礼器，1938年出土于湖南省宁乡县。尊高58.3厘米，边长52.4厘米，重34.5公斤。</p>
+                    <p>尊体呈方形，四角各铸一羊，羊头伸出器表，羊身与器腹融为一体，造型独特，工艺精湛，是商代青铜器的杰出代表。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>四羊方尊将动物形象与器物造型完美结合，四只羊头雕刻精细，羊角弯曲有力，神态安详，体现了商代工匠高超的铸造技艺。</p>
+                    <p>尊体饰有精美的饕餮纹、夔龙纹和云雷纹，纹饰层次分明，线条流畅，展现了商代青铜器装饰艺术的高度成就。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="he-shi" class="detail-container">
+        <div class="art-detail-header">
+            <h1>和氏璧</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 春秋战国</span>
+                <span><i class="fas fa-tag"></i> 玉器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/和氏璧.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>和氏璧是中国古代最著名的玉器之一，相传为楚国人卞和所献。据《韩非子》记载，卞和先后两次献玉给楚厉王和楚武王，均被误认为欺君而遭刖足。</p>
+                    <p>后楚文王即位，卞和抱玉哭于荆山之下，文王使人剖玉，果得宝玉，遂命名为"和氏璧"。秦始皇统一中国后，命人将和氏璧雕琢为传国玉玺。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>和氏璧质地细腻，色泽温润，据传在日光下能显现出美丽的纹理和光泽，是玉器中的极品。</p>
+                    <p>和氏璧象征至高无上的权力，历代帝王视为珍宝，其传奇故事也反映了中国古代玉文化的深厚内涵。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="jade-burial" class="detail-container">
+        <div class="art-detail-header">
+            <h1>金缕玉衣</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 汉代</span>
+                <span><i class="fas fa-tag"></i> 玉器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/金缕玉衣.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>金缕玉衣是汉代皇帝和高级贵族死后穿用的殓服，用金丝将玉片编缀而成，又称"玉匣"或"玉柙"。1968年河北满城汉墓出土的中山靖王刘胜的金缕玉衣最为著名。</p>
+                    <p>完整的金缕玉衣外观与人体形状相同，分为头部、上衣、裤筒、手套和鞋五部分。刘胜的金缕玉衣共用玉片2498片，金丝约1100克。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>金缕玉衣制作工艺复杂，需经过设计、选料、开片、钻孔、抛光、编缀等多道工序，代表了汉代玉器工艺的最高水平。</p>
+                    <p>玉片多为和田玉，形状规整，边缘打磨光滑，金丝粗细均匀，编织紧密，体现了汉代精湛的手工艺技术。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="jade-cong" class="detail-container">
+        <div class="art-detail-header">
+            <h1>良渚玉琮</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 新石器时代</span>
+                <span><i class="fas fa-tag"></i> 玉器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/良褚玉琮.jpg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>良渚玉琮是良渚文化玉器代表作，距今约5300-4300年，出土于浙江省余杭县良渚遗址。玉琮外方内圆，中有圆孔，器表雕刻精细的神人兽面纹。</p>
+                    <p>玉琮是古代祭祀天地的礼器，象征天圆地方的宇宙观，反映了良渚文化高度发达的精神信仰和社会组织。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>良渚玉琮制作工艺精湛，器形规整，纹饰精细，神人兽面纹神秘庄严，体现了良渚先民高超的玉器制作技艺和丰富的想象力。</p>
+                    <p>玉琮的钻孔技术尤为精湛，孔壁光滑笔直，展现了新石器时代晚期玉器工艺的卓越成就。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="jade-dragon" class="detail-container">
+        <div class="art-detail-header">
+            <h1>红山玉龙</h1>
+            <div class="art-meta">
+                <span><i class="fas fa-history"></i> 新石器时代</span>
+                <span><i class="fas fa-tag"></i> 玉器</span>
+            </div>
+        </div>
+        
+        <div class="art-detail-content">
+            <div class="art-image-container">
+                <div class="art-image" style="background-image: url('./img/红山玉龙.jpeg')"></div>
+            </div>
+            
+            <div class="art-info">
+                <div class="art-description">
+                    <h2>作品简介</h2>
+                    <p>红山玉龙是红山文化玉器代表作，距今约5500-5000年，1971年出土于内蒙古自治区翁牛特旗三星他拉村。玉龙高26厘米，呈"C"字形，通体磨光，造型简洁生动。</p>
+                    <p>红山玉龙是中国最早的龙形玉器之一，被誉为"中华第一龙"，对研究中国龙文化的起源具有重要意义。</p>
+                </div>
+                
+                <div class="art-details">
+                    <h3>艺术特色</h3>
+                    <p>红山玉龙造型抽象简练，线条流畅，龙首有长吻，双眼突起，颈背有长鬣，身体蜷曲如钩，充满动感和力量。</p>
+                    <p>玉龙通体抛光，质地温润，制作工艺精湛，体现了红山文化先民高超的玉器制作水平和独特的艺术表现力。</p>
+                </div>
+                
+                <a href="art.html" class="back-button">返回艺术瑰宝</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 根据URL参数显示对应的详情页
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const artId = urlParams.get('id');
+            
+            if (artId) {
+                // 隐藏所有详情页
+                document.querySelectorAll('.detail-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                
+                // 显示对应的详情页
+                const targetDetail = document.getElementById(artId);
+                if (targetDetail) {
+                    targetDetail.classList.add('active');
+                }
+            }
+        });
+        
+        document.getElementById('backButton').addEventListener('click', function() {
+        window.history.back();
+        // 或者使用 location.href = 'art.html';
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艺术瑰宝 - 中华文化瑰宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f4e9;
+            padding-top: 80px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .main-nav.scrolled {
+            background: #bc002d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 5%;
+            height: 60px;
+        }
+        
+        .logo img {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-links a {
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        /* 艺术瑰宝页面标题区 */
+        .art-header {
+            height: 60vh;
+            background: linear-gradient(rgba(0, 0, 0, 5), rgba(0, 0, 0, 0.3)), 
+                        url('./img/背景3.jpeg') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            margin-top: 0;
+            
+        }
+        
+        .art-header h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        .art-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* 分类筛选 */
+        .art-filter {
+            padding: 15px 10%;
+            background: #f0e6d2;
+            text-align: center;
+            position: sticky;
+            top: 80px; /* 与导航栏高度一致 */
+            margin-top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: top 0.3s;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            background: white;
+            border: 2px solid #bc002d;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #bc002d;
+            color: white;
+        }
+        /* 当导航栏收缩时调整位置 */
+        .main-nav.scrolled + .art-header + .art-filter {
+            top: 60px; /* 调整后的导航栏高度 */
+        }        
+        /* 艺术品展示区 */
+        .art-gallery {
+            padding: 30px 10% 60px; /* 减少顶部内边距 */
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: #bc002d;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #006f47;
+        }
+        
+        .art-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .art-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .art-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .art-image {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .art-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .art-info {
+            padding: 20px;
+        }
+        
+        .art-info h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #bc002d;
+        }
+        
+        .art-dynasty {
+            font-style: italic;
+            color: #006f47;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .art-dynasty i {
+            margin-right: 10px;
+        }
+        
+        .art-desc {
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .view-details {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #bc002d;
+            color: white;
+            border-radius: 30px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .view-details:hover {
+            background: #8c001a;
+            transform: translateY(-2px);
+        }
+        
+        /* 页脚 */
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 40px 10%;
+            text-align: center;
+        }
+        
+        .social-icons {
+            margin-bottom: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 10px;
+            text-align: center;
+            line-height: 40px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background: #bc002d;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .art-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .art-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="main-nav" id="mainNav">
+        <div class="logo">
+            <img src="./img/logo3.png" alt="中华文化">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="history.html">历史长河</a></li>
+            <li><a href="art.html" class="active">艺术瑰宝</a></li>
+            <li><a href="festival.html">传统节日</a></li>
+            <li><a href="quiz.html">文化测验</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+        </ul>
+        <div class="language-switch">中/EN</div>
+    </nav>
+
+    <!-- 页面标题区 -->
+    <header class="art-header">
+        <h1>艺术瑰宝</h1>
+        <p>探索中华五千年文明的艺术精华，感受传统艺术的永恒魅力</p>
+    </header>
+
+    <!-- 分类筛选 -->
+    <section class="art-filter">
+        <div class="section-title">
+            <h2>艺术分类</h2>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">全部</button>
+            <button class="filter-btn" data-category="painting">绘画</button>
+            <button class="filter-btn" data-category="calligraphy">书法</button>
+            <button class="filter-btn" data-category="ceramic">陶瓷</button>
+            <button class="filter-btn" data-category="sculpture">雕塑</button>
+            <button class="filter-btn" data-category="bronze">青铜器</button>
+            <button class="filter-btn" data-category="jade">玉器</button>
+        </div>
+    </section>
+
+    <!-- 艺术品展示区 -->
+    <section class="art-gallery">
+        <div class="section-title">
+            <h2>精选艺术品</h2>
+        </div>
+        
+        <div class="art-grid">
+            <!-- 绘画类 -->
+            <div class="art-card" data-category="painting">
+                <div class="art-image" style="background-image: url('./img/清明上河图.jpg')">
+                    <div class="art-category">绘画</div>
+                </div>
+                <div class="art-info">
+                    <h3>清明上河图</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>北宋·张择端
+                    </div>
+                    <div class="art-desc">
+                        北宋风俗画的巅峰之作，描绘了汴京城的繁华景象，是中国绘画史上最著名的作品之一。
+                    </div>
+                    <a href="art-details.html?id=qingming" class="view-details" data-id="qingming">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="painting">
+                <div class="art-image" style="background-image: url('./img/富春山居图.jpeg')">
+                    <div class="art-category">绘画</div>
+                </div>
+                <div class="art-info">
+                    <h3>富春山居图</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>元代·黄公望
+                    </div>
+                    <div class="art-desc">
+                        "元四家"之首黄公望的代表作，描绘富春江两岸初秋景色，是中国山水画的巅峰之作。
+                    </div>
+                    <a href="art-details.html?id=fu-chun" class="view-details" data-id="fu-chun">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="painting">
+                <div class="art-image" style="background-image: url('./img/韩熙载夜宴图.jpeg')">
+                    <div class="art-category">绘画</div>
+                </div>
+                <div class="art-info">
+                    <h3>韩熙载夜宴图</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>五代·顾闳中
+                    </div>
+                    <div class="art-desc">
+                        五代南唐画家顾闳中的工笔重彩人物画，描绘了官员韩熙载家设夜宴载歌行乐的场面。
+                    </div>
+                    <a href="art-details.html?id=han-xi" class="view-details" data-id="han-xi">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="painting">
+                <div class="art-image" style="background-image: url('./img/洛神赋图.jpeg')">
+                    <div class="art-category">绘画</div>
+                </div>
+                <div class="art-info">
+                    <h3>洛神赋图</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>东晋·顾恺之
+                    </div>
+                    <div class="art-desc">
+                        东晋顾恺之根据曹植《洛神赋》创作的绢本绘画，是中国古代人物画的杰出代表。
+                    </div>
+                    <a href="art-details.html?id=luo-shen" class="view-details" data-id="luo-shen">查看详情</a>
+                </div>
+            </div>
+            
+            <!-- 书法类 -->
+            <div class="art-card" data-category="calligraphy">
+                <div class="art-image" style="background-image: url('./img/兰亭序.jpg')">
+                    <div class="art-category">书法</div>
+                </div>
+                <div class="art-info">
+                    <h3>兰亭序</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>东晋·王羲之
+                    </div>
+                    <div class="art-desc">
+                        被誉为"天下第一行书"，是王羲之在兰亭雅集时所作，展现了中国书法艺术的最高境界。
+                    </div>
+                    <a href="art-details.html?id=lan-ting" class="view-details" data-id="lan-ting">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="calligraphy">
+                <div class="art-image" style="background-image: url('./img/九成宫醴泉铭.jpeg')">
+                    <div class="art-category">书法</div>
+                </div>
+                <div class="art-info">
+                    <h3>九成宫醴泉铭</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>唐代·欧阳询
+                    </div>
+                    <div class="art-desc">
+                        欧阳询晚年楷书代表作，被誉为"天下第一楷书"，是学习楷书的经典范本。
+                    </div>
+                    <a href="art-details.html?id=jiu-cheng" class="view-details" data-id="jiu-cheng">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="calligraphy">
+                <div class="art-image" style="background-image: url('./img/多宝塔碑.jpeg')">
+                    <div class="art-category">书法</div>
+                </div>
+                <div class="art-info">
+                    <h3>多宝塔碑</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>唐代·颜真卿
+                    </div>
+                    <div class="art-desc">
+                        颜真卿早期楷书代表作，结构严谨，笔法精妙，是唐代楷书的典范之作。
+                    </div>
+                    <a href="art-details.html?id=duo-bao" class="view-details" data-id="duo-bao">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="calligraphy">
+                <div class="art-image" style="background-image: url('./img/颜勤礼碑.jpeg')">
+                    <div class="art-category">书法</div>
+                </div>
+                <div class="art-info">
+                    <h3>颜勤礼碑</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>唐代·颜真卿
+                    </div>
+                    <div class="art-desc">
+                        颜真卿晚年楷书代表作，笔力雄浑，气势磅礴，体现了"颜体"书法的最高成就。
+                    </div>
+                    <a href="art-details.html?id=yan-qin" class="view-details" data-id="yan-qin">查看详情</a>
+                </div>
+            </div>
+            
+            <!-- 陶瓷类 -->
+            <div class="art-card" data-category="ceramic">
+                <div class="art-image" style="background-image: url('./img/唐三彩1.jpg')">
+                    <div class="art-category">陶瓷</div>
+                </div>
+                <div class="art-info">
+                    <h3>唐三彩</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>唐代
+                    </div>
+                    <div class="art-desc">
+                        唐代低温彩釉陶器的总称，以黄、绿、白三色为主，造型生动，色彩艳丽，是唐代艺术的杰出代表。
+                    </div>
+                    <a href="art-details.html?id=tang-sancai" class="view-details" data-id="tang-sancai">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="ceramic">
+                <div class="art-image" style="background-image: url('./img/元青花.jpg')">
+                    <div class="art-category">陶瓷</div>
+                </div>
+                <div class="art-info">
+                    <h3>元青花</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>元代
+                    </div>
+                    <div class="art-desc">
+                        元代青花瓷器，以钴料在瓷胎上绘画，施透明釉后高温烧成，是中国陶瓷艺术的瑰宝。
+                    </div>
+                    <a href="art-details.html?id=blue-white" class="view-details" data-id="blue-white">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="ceramic">
+                <div class="art-image" style="background-image: url('./img/汝窑瓷器.jpg')">
+                    <div class="art-category">陶瓷</div>
+                </div>
+                <div class="art-info">
+                    <h3>汝窑瓷器</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>宋代
+                    </div>
+                    <div class="art-desc">
+                        宋代五大名窑之首，以天青釉色著称，釉面温润如玉，有"雨过天青云破处"之美誉。
+                    </div>
+                    <a href="art-details.html?id=ru-ware" class="view-details" data-id="ru-ware">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="ceramic">
+                <div class="art-image" style="background-image: url('./img/斗彩瓷器.jpeg')">
+                    <div class="art-category">陶瓷</div>
+                </div>
+                <div class="art-info">
+                    <h3>斗彩瓷器</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>明代
+                    </div>
+                    <div class="art-desc">
+                        明代创烧的彩瓷品种，釉下青花与釉上彩相结合，色彩绚丽，工艺精湛。
+                    </div>
+                    <a href="art-details.html?id=dou-cai" class="view-details" data-id="dou-cai">查看详情</a>
+                </div>
+            </div>
+            
+            <!-- 雕塑类 -->
+            <div class="art-card" data-category="sculpture">
+                <div class="art-image" style="background-image: url('./img/兵马俑.jpeg')">
+                    <div class="art-category">雕塑</div>
+                </div>
+                <div class="art-info">
+                    <h3>兵马俑</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>秦代
+                    </div>
+                    <div class="art-desc">
+                        秦始皇陵的陪葬俑群，被誉为"世界第八大奇迹"，展现了秦代雕塑艺术的高度成就。
+                    </div>
+                    <a href="art-details.html?id=terracotta" class="view-details" data-id="terracotta">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="sculpture">
+                <div class="art-image" style="background-image: url('./img/龙门石窟.jpeg')">
+                    <div class="art-category">雕塑</div>
+                </div>
+                <div class="art-info">
+                    <h3>龙门石窟</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>北魏至唐代
+                    </div>
+                    <div class="art-desc">
+                        中国三大石窟之一，现存窟龛2345个，造像10万余尊，展现了佛教艺术的辉煌成就。
+                    </div>
+                    <a href="art-details.html?id=longmen" class="view-details" data-id="longmen">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="sculpture">
+                <div class="art-image" style="background-image: url('./img/云冈石窟.jpeg')">
+                    <div class="art-category">雕塑</div>
+                </div>
+                <div class="art-info">
+                    <h3>云冈石窟</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>北魏
+                    </div>
+                    <div class="art-desc">
+                        中国三大石窟之一，现存主要洞窟45个，造像51000余尊，代表了5世纪佛教艺术的最高成就。
+                    </div>
+                    <a href="art-details.html?id=yungang" class="view-details" data-id="yungang">查看详情</a>
+            </div>
+            </div>
+            
+            <div class="art-card" data-category="sculpture">
+                <div class="art-image" style="background-image: url('./img/乐山大佛.jpeg')">
+                    <div class="art-category">雕塑</div>
+                </div>
+                <div class="art-info">
+                    <h3>乐山大佛</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>唐代
+                    </div>
+                    <div class="art-desc">
+                        世界最大的石刻弥勒佛坐像，高71米，开凿于唐代，历时90年完成，气势恢宏。
+                    </div>
+                    <a href="art-details.html?id=maitreya" class="view-details" data-id="maitreya">查看详情</a>
+                </div>
+            </div>
+            
+            <!-- 青铜器类 -->
+            <div class="art-card" data-category="bronze">
+                <div class="art-image" style="background-image: url('./img/司母戊鼎1.jpg')">
+                    <div class="art-category">青铜器</div>
+                </div>
+                <div class="art-info">
+                    <h3>司母戊鼎</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>商代
+                    </div>
+                    <div class="art-desc">
+                        商代晚期青铜器的代表作，重达832.84公斤，是中国现存最大、最重的青铜器。
+                    </div>
+                    <a href="art-details.html?id=si-mu-wu" class="view-details" data-id="si-mu-wu">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="bronze">
+                <div class="art-image" style="background-image: url('./img/毛公鼎.jpeg')">
+                    <div class="art-category">青铜器</div>
+                </div>
+                <div class="art-info">
+                    <h3>毛公鼎</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>西周
+                    </div>
+                <div class="art-desc">
+                    西周晚期青铜器，内壁铸有499字铭文，是现存铭文最长的青铜器，具有重要历史价值。
+                </div>
+                <a href="art-details.html?id=mao-gong" class="view-details" data-id="mao-gong">查看详情</a>
+            </div>
+            </div>
+            
+            <div class="art-card" data-category="bronze">
+                <div class="art-image" style="background-image: url('./img/曾侯乙尊盘.jpeg')">
+                    <div class="art-category">青铜器</div>
+                </div>
+                <div class="art-info">
+                    <h3>曾侯乙尊盘</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>战国
+                    </div>
+                    <div class="art-desc">
+                        战国早期青铜器，采用失蜡法铸造，工艺精湛复杂，代表了先秦青铜铸造技术的最高水平。
+                    </div>
+                    <a href="art-details.html?id=zun-pan" class="view-details" data-id="zun-pan">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="bronze">
+                <div class="art-image" style="background-image: url('./img/四羊方尊.jpeg')">
+                    <div class="art-category">青铜器</div>
+                </div>
+                <div class="art-info">
+                    <h3>四羊方尊</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>商代
+                    </div>
+                    <div class="art-desc">
+                        商代晚期青铜礼器，造型独特，四角各铸一羊，工艺精湛，是商代青铜器的杰出代表。
+                    </div>
+                    <a href="art-details.html?id=four-goat" class="view-details" data-id="four-goat">查看详情</a>
+                </div>
+            </div>
+            
+            <!-- 玉器类 -->
+            <div class="art-card" data-category="jade">
+                <div class="art-image" style="background-image: url('./img/和氏璧.jpg')">
+                    <div class="art-category">玉器</div>
+                </div>
+                <div class="art-info">
+                    <h3>和氏璧</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>春秋战国
+                    </div>
+                    <div class="art-desc">
+                        中国古代最著名的玉器之一，相传为卞和所献，后成为秦国的传国玉玺，象征至高无上的权力。
+                    </div>
+                    <a href="art-details.html?id=he-shi" class="view-details" data-id="he-shi">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="jade">
+                <div class="art-image" style="background-image: url('./img/金缕玉衣.jpg')">
+                    <div class="art-category">玉器</div>
+                </div>
+                <div class="art-info">
+                    <h3>金缕玉衣</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>汉代
+                    </div>
+                    <div class="art-desc">
+                        汉代皇帝和高级贵族死后穿用的殓服，用金丝将玉片编缀而成，代表了汉代玉器工艺的最高水平。
+                    </div>
+                    <a href="art-details.html?id=jade-burial" class="view-details" data-id="jade-burial">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="jade">
+                <div class="art-image" style="background-image: url('./img/良褚玉琮.jpg')">
+                    <div class="art-category">玉器</div>
+                </div>
+                <div class="art-info">
+                    <h3>良渚玉琮</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>新石器时代
+                    </div>
+                    <div class="art-desc">
+                        良渚文化玉器代表作，外方内圆，雕刻精细，是古代祭祀天地的礼器，具有重要文化意义。
+                    </div>
+                    <a href="art-details.html?id=jade-cong" class="view-details" data-id="jade-cong">查看详情</a>
+                </div>
+            </div>
+            
+            <div class="art-card" data-category="jade">
+                <div class="art-image" style="background-image: url('./img/红山玉龙.jpeg')">
+                    <div class="art-category">玉器</div>
+                </div>
+                <div class="art-info">
+                    <h3>红山玉龙</h3>
+                    <div class="art-dynasty">
+                        <i class="fas fa-history"></i>新石器时代
+                    </div>
+                    <div class="art-desc">
+                        红山文化玉器代表作，造型简洁生动，是中国最早的龙形玉器之一，被誉为"中华第一龙"。
+                    </div>
+                    <a href="art-details.html?id=jade-dragon" class="view-details" data-id="jade-dragon">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="main-footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-weixin"></i></a>
+            <a href="#"><i class="fab fa-weibo"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p class="copyright">© 2025 中华文化瑰宝 | 所有权利保留</p>
+    </footer>
+
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 艺术品分类筛选
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const artCards = document.querySelectorAll('.art-card');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 更新活动按钮样式
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const category = button.dataset.category;
+                
+                // 筛选艺术品
+                artCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 保存滚动位置和点击的卡片
+        document.querySelectorAll('.view-details').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const cardId = this.getAttribute('data-id');
+                sessionStorage.setItem('lastScrollPosition', window.scrollY);
+                sessionStorage.setItem('lastClickedCard', cardId);
+            });
+        });
+
+        // 页面加载时恢复位置
+        window.addEventListener('DOMContentLoaded', function() {
+            const scrollPosition = sessionStorage.getItem('lastScrollPosition');
+            const cardId = sessionStorage.getItem('lastClickedCard');
+    
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                sessionStorage.removeItem('lastScrollPosition');
+            }
+    
+            if (cardId) {
+                const card = document.querySelector(`#art-${cardId}`);
+                if (card) {
+                    setTimeout(() => {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+                sessionStorage.removeItem('lastClickedCard');
+            }
+        });
+    </script>
+</body>
+</html>

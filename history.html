@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史长河 - 中华文化瑰宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 - 与首页保持一致 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f4e9;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 - 与首页一致 */
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(188, 0, 45, 0.9);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0%;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        
+        .main-nav.scrolled {
+            background: #bc002d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo img {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-links a {
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #f8ecc2;
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #f8ecc2;
+        }
+        
+        .language-switch {
+            border: 1px solid white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        
+        /* 历史页面特有样式 */
+        .history-header {
+            height: 60vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), 
+                        url('./img/背景1.avif') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            /* margin-top: 80px; */
+        }
+        
+        .history-header h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        .history-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* 时间轴样式 */
+        .timeline-container {
+            padding: 60px 10%;
+            background: #f8f4e9;
+        }
+        
+        .timeline-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .timeline-title h2 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: #bc002d;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .timeline-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #006f47;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background: #bc002d;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 3px;
+        }
+        
+        .dynasty {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+        
+        .dynasty::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #f8ecc2;
+            border: 4px solid #bc002d;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::after {
+            right: -12px;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .dynasty-content {
+            padding: 20px 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .dynasty-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dynasty-content h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #bc002d;
+        }
+        
+        .dynasty-period {
+            font-style: italic;
+            color: #006f47;
+            margin-bottom: 15px;
+        }
+        
+        .dynasty-achievements {
+            margin-bottom: 15px;
+        }
+        
+        .dynasty-achievements li {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .dynasty-image {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        /* 文物展示区 */
+        .artifacts-section {
+            padding: 60px 10%;
+            background: linear-gradient(to bottom, #f8f4e9, #f0e6d2);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: #006f47;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #bc002d;
+        }
+        
+        .artifacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .artifact-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .artifact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .artifact-image {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .artifact-info {
+            padding: 20px;
+        }
+        
+        .artifact-info h3 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .artifact-dynasty {
+            display: inline-block;
+            background: #bc002d;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        /* 页脚 - 与首页一致 */
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 40px 10%;
+            text-align: center;
+        }
+        
+        .social-icons {
+            margin-bottom: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 10px;
+            text-align: center;
+            line-height: 40px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background: #bc002d;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .history-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .dynasty {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .dynasty::after {
+                left: 18px;
+            }
+            
+            .left::after, .right::after {
+                left: 18px;
+            }
+            
+            .left, .right {
+                left: 0;
+            }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #f8f4e9;
+            margin: 5% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 900px;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 2rem;
+            color: #bc002d;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+        
+        .artifact-detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .detail-image {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .detail-text h2 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.2rem;
+            color: #bc002d;
+            margin-bottom: 10px;
+        }
+        
+        .detail-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-dynasty {
+            background: #bc002d;
+            color: white;
+            padding: 3px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-museum {
+            background: #006f47;
+            color: white;
+            padding: 3px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-description {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .detail-facts {
+            background: rgba(188, 0, 45, 0.1);
+            padding: 15px;
+            border-left: 3px solid #bc002d;
+            margin-bottom: 20px;
+        }
+        
+        .detail-facts h4 {
+            margin-bottom: 10px;
+            color: #bc002d;
+        }
+        
+        /* 文物卡片添加指针效果 */
+        .artifact-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .artifact-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                margin: 10% auto;
+            }
+            
+            .detail-image {
+                min-width: 100%;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="main-nav" id="mainNav">
+        <div class="logo">
+            <img src="./img/logo3.png" alt="中华文化">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="history.html" class="active">历史长河</a></li>
+            <li><a href="art.html">艺术瑰宝</a></li>
+            <li><a href="festival.html">传统节日</a></li>
+            <li><a href="quiz.html">文化测验</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+        </ul>
+        <div class="language-switch">中/EN</div>
+    </nav>
+
+    <!-- 页面标题区 -->
+    <header class="history-header">
+        <h1>华夏五千年</h1>
+        <p>从远古传说到大一统王朝，从青铜器到丝绸之路，探索中华文明的辉煌历程</p>
+    </header>
+
+    <!-- 时间轴部分 -->
+    <section class="timeline-container">
+        <div class="timeline-title">
+            <h2>朝代更迭</h2>
+        </div>
+        
+        <div class="timeline">
+            <!-- 夏商周 -->
+            <div class="dynasty left">
+                <div class="dynasty-content">
+                    <h3>夏商周</h3>
+                    <div class="dynasty-period">约前2070年-前256年</div>
+                    <ul class="dynasty-achievements">
+                        <li>中国最早的王朝体系形成</li>
+                        <li>甲骨文出现，汉字雏形诞生</li>
+                        <li>青铜器制作达到鼎盛</li>
+                        <li>周朝确立分封制和礼乐制度</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/夏商周.jpg');"></div>
+                </div>
+            </div>
+            
+            <!-- 秦汉 -->
+            <div class="dynasty right">
+                <div class="dynasty-content">
+                    <h3>秦汉</h3>
+                    <div class="dynasty-period">前221年-220年</div>
+                    <ul class="dynasty-achievements">
+                        <li>中国首次实现大一统</li>
+                        <li>秦始皇统一文字、货币、度量衡</li>
+                        <li>汉武帝开拓丝绸之路</li>
+                        <li>造纸术发明，文化传播革命</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/秦汉.jpeg');"></div>
+                </div>
+            </div>
+            
+            <!-- 三国两晋南北朝 -->
+            <div class="dynasty left">
+                <div class="dynasty-content">
+                    <h3>三国两晋南北朝</h3>
+                    <div class="dynasty-period">220年-589年</div>
+                    <ul class="dynasty-achievements">
+                        <li>民族大融合时期</li>
+                        <li>佛教艺术传入并本土化</li>
+                        <li>山水画开始形成</li>
+                        <li>《世说新语》等文学经典问世</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/三国两晋南北朝.jpeg');"></div>
+                </div>
+            </div>
+            
+            <!-- 隋唐 -->
+            <div class="dynasty right">
+                <div class="dynasty-content">
+                    <h3>隋唐</h3>
+                    <div class="dynasty-period">581年-907年</div>
+                    <ul class="dynasty-achievements">
+                        <li>科举制度确立</li>
+                        <li>唐诗达到鼎盛</li>
+                        <li>长安成为国际大都市</li>
+                        <li>佛教艺术高度发展（如敦煌莫高窟）</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/隋唐.jpg');"></div>
+                </div>
+            </div>
+            
+            <!-- 宋元 -->
+            <div class="dynasty left">
+                <div class="dynasty-content">
+                    <h3>宋元</h3>
+                    <div class="dynasty-period">960年-1368年</div>
+                    <ul class="dynasty-achievements">
+                        <li>活字印刷术发明</li>
+                        <li>宋词成为文学主流</li>
+                        <li>瓷器工艺达到巅峰</li>
+                        <li>元朝建立横跨欧亚的大帝国</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/宋元.jpg');"></div>
+                </div>
+            </div>
+            
+            <!-- 明清 -->
+            <div class="dynasty right">
+                <div class="dynasty-content">
+                    <h3>明清</h3>
+                    <div class="dynasty-period">1368年-1912年</div>
+                    <ul class="dynasty-achievements">
+                        <li>紫禁城建成</li>
+                        <li>《永乐大典》《四库全书》编纂</li>
+                        <li>京剧形成并发展</li>
+                        <li>海上丝绸之路繁荣</li>
+                    </ul>
+                    <div class="dynasty-image" style="background-image: url('./img/明清.jpg');"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文物展示区 -->
+    <section class="artifacts-section">
+        <div class="section-title">
+            <h2>国宝文物</h2>
+        </div>
+        
+        <div class="artifacts-grid">
+            <!-- 司母戊鼎 -->
+            <div class="artifact-card" onclick="showArtifactDetail('simuwu')">
+                <div class="artifact-image" style="background-image: url('./img/司母戊鼎1.jpg');"></div>
+                <div class="artifact-info">
+                    <span class="artifact-dynasty">商朝</span>
+                    <h3>司母戊鼎</h3>
+                    <p>现存最大的青铜器，重达832.84公斤，代表了商代青铜铸造技术的巅峰。</p>
+                </div>
+            </div>
+            
+            <!-- 金缕玉衣 -->
+            <div class="artifact-card" onclick="showArtifactDetail('jinlvyuyi')">
+                <div class="artifact-image" style="background-image: url('./img/金缕玉衣.jpg');"></div>
+                <div class="artifact-info">
+                    <span class="artifact-dynasty">汉朝</span>
+                    <h3>金缕玉衣</h3>
+                    <p>用金丝将玉片编缀而成的殓服，体现了汉代贵族对永生的追求。</p>
+                </div>
+            </div>
+            
+            <!-- 唐三彩 -->
+            <div class="artifact-card" onclick="showArtifactDetail('tangsancai')">
+                <div class="artifact-image" style="background-image: url('./img/唐三彩1.jpg');"></div>
+                <div class="artifact-info">
+                    <span class="artifact-dynasty">唐朝</span>
+                    <h3>唐三彩</h3>
+                    <p>低温彩釉陶器，以黄、绿、白三色为主，反映唐代开放包容的社会风貌。</p>
+                </div>
+            </div>
+            
+            <!-- 清明上河图 -->
+            <div class="artifact-card" onclick="showArtifactDetail('qingmingshanghetu')">
+                <div class="artifact-image" style="background-image: url('./img/清明上河图.jpg');"></div>
+                <div class="artifact-info">
+                    <span class="artifact-dynasty">宋朝</span>
+                    <h3>清明上河图</h3>
+                    <p>张择端绘制的长卷风俗画，生动记录了北宋都城汴京的繁华景象。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文物详情模态框 -->
+    <div id="artifactModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 文物详情数据
+        const artifacts = {
+            simuwu: {
+                title: "司母戊鼎",
+                dynasty: "商朝晚期",
+                museum: "中国国家博物馆",
+                imageUrl:"./img/司母戊鼎1.jpg",
+                description: "司母戊鼎是中国商代晚期最重的青铜器，1939年出土于河南省安阳市武官村。鼎高133厘米，口长110厘米，口宽79厘米，重832.84公斤。鼎身呈长方形，立耳，柱足，腹部饰饕餮纹，足部饰兽面纹。内壁铸有'司母戊'三字铭文，据考证是商王为祭祀其母戊而铸。此鼎采用陶范法铸造，需用1000公斤以上的原料，由上百名工匠协作完成，体现了商代高度发达的青铜冶铸技术。",
+                facts: [
+                    "铸造年代：约公元前14-11世纪",
+                    "出土时间：1939年",
+                    "材质：青铜（铜84.77%、锡11.64%、铅2.79%）",
+                    "特点：现存最大、最重的古代青铜器",
+                    "纹饰：腹部饕餮纹、足部兽面纹",
+                    "历史意义：商代青铜器代表作，国家一级文物"
+                ]
+            },
+            jinlvyuyi: {
+                title: "金缕玉衣",
+                dynasty: "西汉时期",
+                museum: "河北省博物馆",
+                imageUrl: "./img/金缕玉衣.jpg",
+                description: "金缕玉衣是汉代皇帝和高级贵族死后穿用的殓服，用金丝将玉片编缀而成，又称'玉匣'或'玉柙'。完整的金缕玉衣外观与人体形状相同，分为头部、上衣、裤筒、手套和鞋五部分。中山靖王刘胜的金缕玉衣共用玉片2498片，金丝约1100克。玉衣制作工艺复杂，需经过设计、选料、开片、钻孔、抛光、编缀等多道工序，代表了汉代玉器工艺的最高水平。",
+                facts: [
+                    "制作年代：公元前2世纪",
+                    "出土时间：1968年河北满城汉墓",
+                    "材质：和田玉片、金丝",
+                    "刘胜玉衣尺寸：长1.88米",
+                    "玉片数量：2498片",
+                    "金丝重量：约1100克",
+                    "修复时间：共花费3年时间修复"
+                ]
+            },
+            tangsancai: {
+                title: "唐三彩",
+                dynasty: "唐朝",
+                museum: "陕西历史博物馆",
+                imageUrl: "./img/唐三彩1.jpg",
+                description: "唐三彩是唐代低温彩釉陶器的总称，因常用黄、绿、白三种釉色而得名。实际上还有蓝、赭、紫、黑等多种颜色。唐三彩主要用作随葬明器，分为人物、动物、器皿三大类，其中以马和骆驼造型最为著名。制作工艺复杂，需两次烧成：先烧制陶胎，再上釉二次烧制。唐三彩反映了唐代中外文化交流的盛况，许多造型具有明显的西域风格。",
+                facts: [
+                    "盛行时期：唐高宗至玄宗时期（7-8世纪）",
+                    "主要产地：河南洛阳、陕西西安",
+                    "烧制温度：800-1100℃",
+                    "典型造型：马、骆驼、胡人俑",
+                    "工艺特点：铅釉流动形成斑斓效果",
+                    "历史价值：丝绸之路重要见证",
+                    "现存精品：三彩骆驼载乐俑"
+                ]
+            },
+            qingmingshanghetu: {
+                title: "清明上河图",
+                dynasty: "北宋",
+                museum: "故宫博物院",
+                imageUrl: "./img/清明上河图.jpg",
+                description: "清明上河图是北宋画家张择端创作的绢本设色长卷，宽24.8厘米，长528.7厘米。作品以全景式构图生动记录了北宋都城汴京（今河南开封）的城市面貌和各阶层人民的生活状况。全图分为郊外春光、汴河场景、城内街市三部分，共绘有814人、牲畜60多匹、船只28艘、房屋楼宇30多栋、车轿20余件。画作采用散点透视法，具有极高的历史价值和艺术价值，是研究北宋社会生活的珍贵资料。",
+                facts: [
+                    "创作年代：约公元1111-1125年",
+                    "作者：张择端（北宋宫廷画家）",
+                    "画作材质：绢本设色",
+                    "人物数量：814人",
+                    "细节特点：每个场景都有故事性",
+                    "现存版本：故宫博物院藏本为最著名版本",
+                    "历史劫难：曾四次出宫五次进宫"
+                ]
+            }
+        };
+
+        // 显示文物详情
+        function showArtifactDetail(artifactKey) {
+            const artifact = artifacts[artifactKey];
+            const modal = document.getElementById('artifactModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="artifact-detail">
+                    <div class="detail-image" style="background-image: url('${artifact.imageUrl}')"></div>
+                    <div class="detail-text">
+                        <h2>${artifact.title}</h2>
+                        <div class="detail-meta">
+                            <span class="detail-dynasty">${artifact.dynasty}</span>
+                            <span class="detail-museum">${artifact.museum}</span>
+                        </div>
+                        <div class="detail-description">
+                            <p>${artifact.description}</p>
+                        </div>
+                        <div class="detail-facts">
+                            <h4>文物详情</h4>
+                            <ul>
+                                ${artifact.facts.map(fact => `<li>${fact}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('artifactModal').style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('artifactModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // ESC键关闭模态框
+        document.onkeydown = function(evt) {
+            evt = evt || window.event;
+            if (evt.keyCode == 27) {
+                closeModal();
+            }
+        };
+    </script>
+        <!-- 页脚 -->
+    <footer class="main-footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-weixin"></i></a>
+            <a href="#"><i class="fab fa-weibo"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p class="copyright">© 2025 中华文化瑰宝 | 所有权利保留</p>
+    </footer>
+
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
